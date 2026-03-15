@@ -7,9 +7,9 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "cucumber-js",
-    "test:ui": "cucumber-js --tags @ui",
-    "test:api": "cucumber-js --tags @api"
+  "test": "cucumber-js --format json:reports/json-report/results.json",
+  "test:ui": "cucumber-js --tags @ui --format json:reports/json-report/results.json",
+  "test:api": "cucumber-js --tags @api --format json:reports/json-report/results.json"
   },
   "keywords": [],
   "author": "",
@@ -26,5 +26,8 @@
     "playwright": "^1.58.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "nodemailer": "^8.0.2"
   }
 }
