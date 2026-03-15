@@ -1,9 +1,9 @@
-name: Playwright CI
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+name: Playwright BDD CI
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
 
 jobs:
@@ -11,43 +11,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: Checkout code
+      # 1️⃣ Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      # 2️⃣ Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright Browsers
+      # 4️⃣ Install Playwright browsers
+      - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run UI + API tests
-        run: npm run test
-        continue-on-error: true
+      # 5️⃣ Run tests
+      - name: Run Playwright tests
+        run: npm test
 
-      - name: Upload Playwright HTML report
+      # 6️⃣ Upload HTML report
+      - name: Upload HTML Report
         uses: actions/upload-artifact@v4
         with:
           name: playwright-html-report
-          path: reports/html-report/
+          path: reports/html-report
 
-      - name: Upload JSON results
+      # 7️⃣ Upload Screenshots
+      - name: Upload Screenshots
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
-          path: reports/json-report/
+          name: playwright-screenshots
+          path: reports/screenshots
 
-      - name: Send Email Report
-        if: always()
+      # 8️⃣ Send Email Report (last step)
+      - name: Send CI Email Report
         run: node .github/scripts/sendReport.js
         env:
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
