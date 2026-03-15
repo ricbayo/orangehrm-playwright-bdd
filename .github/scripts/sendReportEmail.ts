@@ -1,61 +1,32 @@
-const nodemailer = require("nodemailer");
-const fs = require("fs");
+const fs = require('fs');
+const nodemailer = require('nodemailer');
 
-const reportFile = "reports/json-report/results.json";
+(async () => {
+  // Read Playwright JSON results
+  const results = JSON.parse(fs.readFileSync('reports/json-report/results.json', 'utf-8'));
+  const total = results.stats?.total || 0;
+  const passed = results.stats?.passed || 0;
+  const failed = results.stats?.failed || 0;
 
-let total = 0;
-let passed = 0;
-let failed = 0;
-let flaky = 0;
-
-if (fs.existsSync(reportFile)) {
-
-  const report = JSON.parse(fs.readFileSync(reportFile));
-
-  report.tests?.forEach((test: any) => {
-    total++;
-
-    if (test.status === "passed") passed++;
-    if (test.status === "failed") failed++;
-
-    if (test.results?.length > 1) flaky++;
-  });
-}
-
-const html = `
-<h2>Playwright Automation Test Report</h2>
-
-<p><b>Total Tests:</b> ${total}</p>
-<p><b>Passed:</b> ${passed}</p>
-<p><b>Failed:</b> ${failed}</p>
-<p><b>Flaky / Retries:</b> ${flaky}</p>
-
-<h3>Failed Test Artifacts</h3>
-<p>Screenshots and logs are available in the GitHub Actions artifacts.</p>
-
-<p>View full report in GitHub Actions.</p>
-`;
-
-async function sendEmail() {
-
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    secure: false,
+  // Create transporter (using Gmail as example)
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
     }
   });
 
-  await transporter.sendMail({
-    from: `"Playwright CI" <${process.env.SMTP_USER}>`,
+  let message = {
+    from: process.env.EMAIL_USER,
     to: process.env.EMAIL_TO,
-    subject: "Playwright Test Execution Report",
-    html: html
-  });
+    subject: `Playwright CI Report - ${new Date().toLocaleString()}`,
+    text: `Total tests: ${total}\nPassed: ${passed}\nFailed: ${failed}\n`,
+    attachments: [
+      { path: 'reports/html-report/index.html' }
+    ]
+  };
 
-  console.log("Email sent successfully");
-}
-
-sendEmail();
+  await transporter.sendMail(message);
+  console.log('Email sent successfully!');
+})();
