@@ -1,0 +1,7 @@
+{
+  "newEmployee": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "jobTitle": "QA Engineer"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "playwright-bdd-typscript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "cucumber-js",
+    "test:ui": "cucumber-js --tags @ui",
+    "test:api": "cucumber-js --tags @api"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@cucumber/cucumber": "^12.7.0",
+    "@playwright/test": "^1.58.2",
+    "@types/chai": "^5.2.3",
+    "@types/node": "^25.5.0",
+    "axios": "^1.13.6",
+    "dotenv": "^17.3.1",
+    "mochawesome": "^7.1.4",
+    "mochawesome-merge": "^5.1.1",
+    "playwright": "^1.58.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

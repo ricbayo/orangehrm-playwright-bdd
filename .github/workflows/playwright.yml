@@ -1,0 +1,51 @@
+name: Playwright BDD Tests CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright BDD Tests
+        id: playwright
+        run: npx cucumber-js
+        continue-on-error: true
+
+      - name: Upload Test Report Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-bdd-reports
+          path: |
+            reports/html-report
+            reports/cucumber-json
+
+      - name: Send Test Report Email
+        if: always()
+        run: node .github/scripts/sendReportEmail.js
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
