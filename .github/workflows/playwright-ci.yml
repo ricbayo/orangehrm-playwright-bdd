@@ -29,8 +29,12 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      # 5️⃣ Run tests
-      - name: Run Playwright tests
+      # 4️⃣a Ensure report folders exist (for JSON/HTML/screenshots)
+      - name: Create report folders
+        run: mkdir -p reports/html-report reports/json-report reports/screenshots
+
+      # 5️⃣ Run tests (Cucumber generates JSON + HTML)
+      - name: Run Playwright Cucumber tests
         run: npm test
 
       # 6️⃣ Upload HTML report

@@ -7,10 +7,10 @@
     "test": "tests"
   },
   "scripts": {
-  "test": "cucumber-js --format json:reports/json-report/results.json",
-  "test:ui": "cucumber-js --tags @ui --format json:reports/json-report/results.json",
-  "test:api": "cucumber-js --tags @api --format json:reports/json-report/results.json"
-  },
+    "test": "cucumber-js --format html:reports/html-report/index.html --format json:reports/json-report/results.json",
+    "test:ui": "cucumber-js --tags @ui --format html:reports/html-report/ui.html --format json:reports/json-report/ui.json",
+    "test:api": "cucumber-js --tags @api --format html:reports/html-report/api.html --format json:reports/json-report/api.json"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
