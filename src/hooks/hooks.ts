@@ -1,27 +1,35 @@
-import { Before, After, setDefaultTimeout, Status } from '@cucumber/cucumber'
-import { chromium, Browser, Page } from '@playwright/test'
+import { Before, After, setDefaultTimeout, Status } from '@cucumber/cucumber';
+import { chromium, Browser, Page } from '@playwright/test';
 
-setDefaultTimeout(60 * 1000) // 60 seconds
+setDefaultTimeout(60 * 1000);
 
-export let page: Page
-let browser: Browser
+export let page: Page;
+let browser: Browser;
 
-Before(async () => {
-  // Launch browser with GUI and slowMo for easier debugging
+Before(async function () {
+  // Launch browser safely
   browser = await chromium.launch({
-    headless: false
-  })
-  const context = await browser.newContext()
-  page = await context.newPage()
-})
+    headless: process.env.CI ? true : false,
+    slowMo: process.env.CI ? 0 : 50
+  });
+
+  const context = await browser.newContext();
+  page = await context.newPage();
+
+  // Attach to Cucumber World
+  this.browser = browser;
+  this.page = page;
+});
 
 After(async function (scenario) {
-  if (scenario.result?.status === Status.FAILED) {
-    // Screenshot on failure
-    await page.screenshot({ 
-      path: `reports/${Date.now()}_failed.png`, 
-      fullPage: true 
-    })
+  // Take screenshot if test failed
+  if (scenario.result?.status === Status.FAILED && this.page) {
+    await this.page.screenshot({
+      path: `reports/screenshots/${Date.now()}_failed.png`,
+      fullPage: true
+    });
   }
-  await browser.close()
-})
+
+  // Close browser safely
+  if (this.browser) await this.browser.close();
+});
