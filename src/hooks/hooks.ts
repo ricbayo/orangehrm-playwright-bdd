@@ -1,6 +1,5 @@
 import { Before, After, setDefaultTimeout, Status } from '@cucumber/cucumber'
 import { chromium, Browser, Page } from '@playwright/test'
-import { testContext } from '../utils/testContext'
 
 setDefaultTimeout(60 * 1000) // 60 seconds
 
